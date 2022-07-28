@@ -1,17 +1,20 @@
+from email.policy import default
 from sqlalchemy import Column, Float, Integer, String, text, TEXT, TIMESTAMP
+from sqlalchemy.orm import relationship
 from marshmallow import fields, validate
 from marshmallow_sqlalchemy import SQLAlchemySchema
 
+
 from . import Base
 
-
-class Service(Base):
-    __tablename__ = "services"
-
+class Order(Base):
+    __tablename__ = 'orders'
+    STATUS_ACTIVE = 'active'
+    STATUS_DELETED = 'deleted'
     id = Column(Integer, primary_key=True)
-    name = Column(String(128), nullable=False)
     description = Column(TEXT, nullable=True)
-    price = Column(Float, nullable=False)
+    status = Column(String(128), nullable=False, default=STATUS_ACTIVE)
+    items = relationship("OrderItem")
     created_on = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     modified_on = Column(
         TIMESTAMP,
@@ -20,19 +23,17 @@ class Service(Base):
             'CURRENT_TIMESTAMP'),
         server_onupdate=text('CURRENT_TIMESTAMP')
     )
-
     def __repr__(self) -> str:
-        return "<Service(name='{}', price='{}', created_on='{}')>".format(self.name, self.price, self.created_on)
+        return "<Order(created_on='{}', description='{}')>".format(self.created_on, self.description)
 
 
-class ServiceSchema(SQLAlchemySchema):
+class OrderSchema(SQLAlchemySchema):
     class Meta:
-        model = Service
+        model = Order
         load_instance = True
 
     id = fields.Integer()
-    name = fields.String(required=True)
     description = fields.String()
-    price = fields.Float(required=True)
+    status = fields.String()
     created_on = fields.DateTime()
     modified_on = fields.DateTime()

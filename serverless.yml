@@ -13,14 +13,40 @@ provider:
 
 functions:
   get_all_orders:
-    handler: handler.get_all_orders
+    handler: order_handler.get_all_orders
     events:
       - httpApi:
           path: /orders
           method: get
 
+  create_order:
+    handler: order_handler.create_order
+    description: Create Order in Database
+    events:
+      - httpApi:
+          path: /order
+          method: post
+
+  update_order:
+    handler: order_handler.update_order
+    description: Update Order in Database
+    events:
+      - httpApi:
+          path: /order/{id}
+          method: put
+    
+  delete_order:
+    handler: order_handler.delete_order
+    description: Delete Order in Database
+    events:
+      - httpApi:
+          path: /order/{id}
+          method: delete
+    
+
   get_all_services:
     handler: service_handler.get_all_services
+    description: Get All Services
     events:
       - httpApi:
           path: /services
