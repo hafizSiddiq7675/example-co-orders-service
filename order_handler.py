@@ -110,8 +110,8 @@ def delete_order(event, context):
 # pylint: disable=unused-argument
 def update_order(event, context):
     order_id = event['pathParameters']['id']
-    order = Session.query(Order).filter(Order.id == order_id and Order.status == Order.STATUS_ACTIVE).first()
-    if order:
+    order = Session.query(Order).filter(Order.id == order_id).first()
+    if order and order.status == Order.STATUS_ACTIVE:
         body = json.loads(event["body"])
         order.description = body.get("description", None)
         Session.query(OrderItem).filter(OrderItem.order_id == order_id).delete()
