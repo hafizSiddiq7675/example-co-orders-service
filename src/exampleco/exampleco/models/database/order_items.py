@@ -8,6 +8,7 @@ from . import Base
 class OrderItem(Base):
     __tablename__ = "order_items"
     id = Column(Integer, primary_key=True)
+    service_id = Column(Integer, ForeignKey("services.id"), nullable=False)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     created_on = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     modified_on = Column(
@@ -29,5 +30,6 @@ class OrderItemSchema(SQLAlchemySchema):
 
     id = fields.Integer()
     order_id = fields.Integer()
+    service_id = fields.Integer()
     created_on = fields.DateTime()
     modified_on = fields.DateTime()

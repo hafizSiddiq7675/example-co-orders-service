@@ -1,4 +1,5 @@
 import json
+from src.exampleco.exampleco.models.database.services import Service, ServiceSchema
 from src.exampleco.exampleco.models.database.order_items import OrderItem
 from src.exampleco.exampleco.models.database import Session
 from src.exampleco.exampleco.models.database.orders import Order, OrderSchema
@@ -26,15 +27,17 @@ def create_order(event, context):
     this function creates an order in the database
     """
     body = json.loads(event["body"])
-    order = Order(description=body.get("description", None))
-    Session.add(order)
-    Session.commit()
-    for service_id in body.get('services', []):
-        order_item = OrderItem(order_id=order.id)
-        print("order_item", order.id)
-        Session.add(order_item)
+    try:
+        order = Order(description=body.get("description", None))
+        Session.add(order)
         Session.commit()
-        # return {"statusCode": 500, "body": json.dumps({"success": False, "error": str(e)})}
+        for service_id in body.get('services', []):
+            order_item = OrderItem(order_id=order.id, service_id=service_id)
+            print("order_item", order.id)
+            Session.add(order_item)
+            Session.commit()
+    except Exception as e:
+        return {"statusCode": 500, "body": json.dumps({"success": False, "error": str(e)})}
     response = {"statusCode": 201, "body": json.dumps({"success": True, "message": "Order created"})}
     return response
 
