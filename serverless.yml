@@ -19,6 +19,13 @@ functions:
           path: /orders
           method: get
 
+  filter_orders:
+    handler: order_handler.filter_orders
+    events:
+      - httpApi:
+          path: /filter/orders
+          method: get
+
   create_order:
     handler: order_handler.create_order
     description: Create Order in Database

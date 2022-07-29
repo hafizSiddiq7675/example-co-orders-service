@@ -35,5 +35,6 @@ class OrderSchema(SQLAlchemySchema):
     id = fields.Integer()
     description = fields.String()
     status = fields.String()
+    items = fields.Nested("OrderItemSchema", many=True)
     created_on = fields.DateTime()
     modified_on = fields.DateTime()

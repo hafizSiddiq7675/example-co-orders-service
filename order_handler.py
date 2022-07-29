@@ -3,6 +3,10 @@ from src.exampleco.exampleco.models.database.services import Service, ServiceSch
 from src.exampleco.exampleco.models.database.order_items import OrderItem
 from src.exampleco.exampleco.models.database import Session
 from src.exampleco.exampleco.models.database.orders import Order, OrderSchema
+from datetime import date, timedelta
+import calendar
+
+TODAY = date.today()
 
 
 # pylint: disable=unused-argument
@@ -21,6 +25,54 @@ def get_all_orders(event, context):
     return response
 
 
+def filter_this_week() -> dict:
+    orders_schema = OrderSchema(many=True)
+    start = TODAY - timedelta(days=TODAY.weekday())
+    end = start + timedelta(days=6)
+    orders = Session.query(Order).filter(Order.status==Order.STATUS_ACTIVE and Order.created_on >=start and Order.created_on <= end ).all()
+    results = orders_schema.dump(orders)
+    response = {"statusCode": 200, "body": json.dumps(results)}
+    return response
+
+
+def filter_this_month() -> dict:
+    orders_schema = OrderSchema(many=True)
+    start = TODAY.replace(day=1)
+    end = TODAY.replace(day=calendar.monthrange(TODAY.year, TODAY.month)[1])
+    orders = Session.query(Order).filter(Order.status==Order.STATUS_ACTIVE and Order.created_on >=start and Order.created_on <= end ).all()
+    results = orders_schema.dump(orders)
+    response = {"statusCode": 200, "body": json.dumps(results)}
+    return response
+
+
+def filter_this_year() -> dict:
+    orders_schema = OrderSchema(many=True)
+    start = TODAY.replace(month=1, day=1)
+    end = TODAY.replace(month=12, day=31)
+    orders = Session.query(Order).filter(Order.status==Order.STATUS_ACTIVE and Order.created_on >=start and Order.created_on <= end ).all()
+    results = orders_schema.dump(orders)
+    response = {"statusCode": 201, "body": json.dumps(results)}
+    return response
+
+
+#pylint: disable=unused-argument
+def filter_orders(event, context):
+    """
+    this function filter orders based on the query params
+    """
+    param = event.get('queryStringParameters')
+    if param is None or param.get('filter') not in ['THIS_WEEK', 'THIS_MONTH', 'THIS_YEAR']:
+        return {"statusCode": 400, "body": json.dumps({"success": False, "message": "Invalid filter"})}
+    if param.get('filter') == 'THIS_WEEK':
+        return filter_this_week()
+    elif param.get('filter') == 'THIS_MONTH':
+        return filter_this_month()
+    elif param.get('filter') == 'THIS_YEAR':
+        return filter_this_year()
+    else:
+        return {"statusCode": 400, "body": json.dumps({"success": False, "message": "Invalid filter"})}
+
+
 # pylint: disable=unused-argument
 def create_order(event, context):
     """
@@ -33,7 +85,6 @@ def create_order(event, context):
         Session.commit()
         for service_id in body.get('services', []):
             order_item = OrderItem(order_id=order.id, service_id=service_id)
-            print("order_item", order.id)
             Session.add(order_item)
             Session.commit()
     except Exception as e:
