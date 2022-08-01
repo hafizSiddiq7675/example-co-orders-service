@@ -13,14 +13,51 @@ provider:
 
 functions:
   get_all_orders:
-    handler: handler.get_all_orders
+    handler: order_handler.get_all_orders
     events:
       - httpApi:
           path: /orders
           method: get
+    timeout: 30
+
+  filter_orders:
+    handler: order_handler.filter_orders
+    events:
+      - httpApi:
+          path: /filter/orders
+          method: get
+    timeout: 30
+
+  create_order:
+    handler: order_handler.create_order
+    description: Create Order in Database
+    events:
+      - httpApi:
+          path: /order
+          method: post
+    timeout: 30
+
+  update_order:
+    handler: order_handler.update_order
+    description: Update Order in Database
+    events:
+      - httpApi:
+          path: /order/{id}
+          method: put
+    timeoute: 30
+
+  delete_order:
+    handler: order_handler.delete_order
+    description: Delete Order in Database
+    events:
+      - httpApi:
+          path: /order/{id}
+          method: delete
+    timeout: 30
 
   get_all_services:
     handler: service_handler.get_all_services
+    description: Get All Services
     events:
       - httpApi:
           path: /services

@@ -4,7 +4,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
-
 logging.basicConfig()
 logger = logging.getLogger("exampleco.sqltime")
 logger.setLevel(logging.DEBUG)
