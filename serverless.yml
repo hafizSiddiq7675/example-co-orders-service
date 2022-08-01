@@ -18,3 +18,20 @@ functions:
       - httpApi:
           path: /orders
           method: get
+
+  get_all_services:
+    handler: service_handler.get_all_services
+    events:
+      - httpApi:
+          path: /services
+          method: get
+    timeout: 30
+
+  get_service_by_id:
+    handler: service_handler.get_service_by_id
+    description: Get Service By Id
+    events:
+      - httpApi:
+          path: /services/{id}
+          method: get
+    timeout: 30
