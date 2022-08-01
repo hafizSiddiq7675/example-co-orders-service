@@ -22,6 +22,12 @@
 
 1. There is an issue with the database migrations using alembic. Fix the issue and document exactly how you fixed the issue
 
+#### How to fix database migration issue
+1. To Fix database migration issue copy (make sure alembic package is installed) alembic.ini from database folder to root directory and changed the migration script path in alembic section
+2. In the env.py fix the import issue change `from exampleco.models.database.services import Service` to from `src.exampleco.exampleco.models.database.services import Service`
+3. Run `alembic merge heads` as migrations already created and we need to create a merge migration
+4. Run `alembic upgrade head`
+
 ### Create services endpoint
 
 1. Create an endpoint to grab a service by id
